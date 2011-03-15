@@ -2,6 +2,11 @@
 import os
 import cburealtimesettings
 
+if (~os.path.exists(cburealtimesettings.realtimepath())):
+	os.mkdir(cburealtimesettings.realtimepath());
+if (~os.path.exists(cburealtimesettings.incomingmetapath())):
+	os.mkdir(cburealtimesettings.incomingmetapath());
+
 while (1):
 	lastseriesfn=os.path.join(cburealtimesettings.incomingmetapath(),"lastseries.txt");
 	try:
