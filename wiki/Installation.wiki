@@ -13,7 +13,39 @@ fprintf('thing');
 </syntaxhighlight>
 {{{
 % hello
+% Example aa version 4 user script
+% Local processing, no modelling
+% Rhodri Cusack, Cambridge Feb 2011
 
+aa_ver4_devel
+
+% Add the directory of this script to the top of the matlab path
+addpath(fileparts(mfilename('fullpath')),'-begin');
+
+% DEFINE STUDY SPECIFIC PARAMETERS
+aap=aarecipe('aap_tasklist_fmri_noslicetiming_cbu32channel.xml');
+% Directory for analysed data
+aap.acq_details.root='/imaging/rhodri/camcan/cc_movie';
+% Sub-directory for analysed data
+aap.directory_conventions.analysisid='data';
+
+% Define subjects, and EPI series number ordered as aas_addsession lines
+% Single echo example: aap=aas_addsubject(aap,'CBU110011_*/*',{15,12,16});
+% Multi echo example: aap=aas_addsubject(aap,'CBU110011_*/*',{[12:14], [6:10]});
+aap=aas_addsubject(aap,'CBU110000_*/*',{6});
+
+% One or more sessions
+aap=aas_addsession(aap,'movie');
+
+% How many dummies?
+aap.acq_details.numdummies=0;
+
+% SITE-SPECIFIC CONFIGURATION
+aap=aas_localconfig(aap);
+aap.directory_conventions.rawdatadir='/mridata/camcan';
+
+% Do processing
+aa_doprocessing(aap);
  svn co https://open-realtime-fmri.googlecode.com/svn {realtime_dir}
 }}}
  * Download spm8 from http://www.fil.ion.ucl.ac.uk/spm/software/ into {realtime_dir} and unzip
