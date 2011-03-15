@@ -6,7 +6,7 @@ def outport_stim():
 def incomingport_scanner():
 	return(6000);
 def realtimepath():
-	return('/realtime/scratch/');
+	return('/home/stefanh/realtime/scratch/');
 def incomingmetapath():
 	return(os.path.join(realtimepath(),'incomingmeta'));
 	
