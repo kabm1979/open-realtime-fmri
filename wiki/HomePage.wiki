@@ -1,0 +1,5 @@
+#summary Home page for realtime
+
+= Welcome =
+
+Welcome to the open-realtime-fmri page.
