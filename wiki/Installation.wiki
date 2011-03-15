@@ -1,0 +1,6 @@
+#summary How to install open realtime
+
+* Make a new directory, perhaps called "realtime", where you will store everything. Below, we'll refer to this as [realtime_dir]
+* Retrieve code from SVN using 
+ svn co https://open-realtime-fmri.googlecode.com/svn [realtime_dir]
+* Download spm8 from http://www.fil.ion.ucl.ac.uk/spm/software/ into [realtime_dir] and unzip
