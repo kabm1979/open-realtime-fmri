@@ -7,5 +7,5 @@ if (~exist(cburt.incoming.processeddata,'file'))
     mkdir(pth,[fle ext]);
 end;
 cd (cburt.incoming.processeddata);
-spm_dicom_convert(H);
+spm_dicom_convert(H,'all','flat','nii');
 cd(pwd);
