@@ -45,10 +45,18 @@ cburt.options.drawgraphicsevery=8;
 rand('state',sum(100*clock))
 
 % Directory conventions
-try cburt.directory_conventions.incomingmetapath; catch cburt.directory_conventions.incomingmetapath='/realtime/scratch/incomingmeta'; end;
-try cburt.directory_conventions.incomingdata; catch cburt.directory_conventions.incomingdata='/realtime/scratch/incoming'; end;
-try cburt.directory_conventions.processeddata; catch cburt.directory_conventions.processeddata='/realtime/scratch/processed'; end;
-try cburt.directory_conventions.rois; catch cburt.directory_conventions.rois='/realtime/scratch/rois'; end;
+global cburealtime_defaults
+try cburt.directory_conventions.incomingmetapath; catch cburt.directory_conventions.incomingmetapath=fullfile(cburealtime_defaults.path_data,'incomingmeta'); end;
+try cburt.directory_conventions.incomingdata; catch cburt.directory_conventions.incomingdata=cburealtime_defaults.path_sambashare; end;
+try cburt.directory_conventions.processeddata; catch cburt.directory_conventions.processeddata=fullfile(cburealtime_defaults.path_data,'processed'); end;
+try cburt.directory_conventions.rois; catch cburt.directory_conventions.rois=fullfile(cburealtime_defaults.path_data,'rois'); end;
+if (~exist(cburt.directory_conventions.incomingmetapath,'dir'))
+    mkdir(cburt.directory_conventions.incomingmetapath);
+end;
+if (~exist(cburt.directory_conventions.processeddata,'dir'))
+    mkdir(cburt.directory_conventions.processeddata);
+end;
+
 
 % % cburt.directory_conventions.incomingmetapath='/imaging/dm01/cbu_rt_appsOct1209/scratch/incomingmeta';
 %try cburt.directory_conventions.incomingdata; catch cburt.directory_conventions.incomingdata='/imaging/dm01/cbu_rt_appsOct1209/scratch/incoming'; end
@@ -70,8 +78,7 @@ end;
 %% List of actions to be triggered by the arrival of different kinds of data
 cburt.actions=[];
 action.shortname='localiser';
-action.protocolname='^CBU_Localiser.*';
-action.imgtype='ORIGINAL\PRIMARY\M\ND';
+action=cburealtime_defaults.protocol.localiser;
 action.onstart={};
 action.onreceived={'cburt_convert'};
 action.ontrigger={};
@@ -79,8 +86,7 @@ action.onend={};
 cburt.actions=[cburt.actions action];
 
 action.shortname='structural';
-action.protocolname='^CBU_MPRAGE.*';
-action.imgtype='ORIGINAL\PRIMARY\M\ND\NORM';
+action=cburealtime_defaults.protocol.anatomical;
 action.onstart={};
 action.onreceived={'cburt_convert_multipledcm_loadheader'};
 action.ontrigger={};
@@ -88,8 +94,7 @@ action.onend={'cburt_convert_multipledcm_doit','cburt_normalise'};
 cburt.actions=[cburt.actions action];
 
 action.shortname='epinomoco';
-action.protocolname='^CBU_EPI.*';
-action.imgtype='ORIGINAL\PRIMARY\M\ND\MOSAIC';
+action=cburealtime_defaults.protocol.functional;
 action.onstart={};
 action.onreceived={'cburt_convert','cburt_qa_oncepervolume','cburt_diagnostics'};
 action.ontrigger={};

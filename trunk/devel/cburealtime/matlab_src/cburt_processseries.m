@@ -61,7 +61,7 @@ while(~strcmp(status,'MEAS_FINISHED'));
                             if (exist(imgpth,'file'))
                                 break;
                             end;
-                            fprintf('Convert find dicom file, retry %d',i);
+                            fprintf('Retry %d cannot find dicom file %s\n',i,imgpth);
                             pause(0.5);
                         end;
                         H=spm_dicom_headers(imgpth);
@@ -124,5 +124,5 @@ try
     cburt=cburt_savecburt(cburt,seriesnum);
     fprintf('all done.\n');
 catch
-    fprintf('\nFailed to save cburt structure. All done.\n')
+    fprintf('\nFailed to save cburt structure to %s.\nAll done.\n',cburt.incoming.processeddata)
 end;
