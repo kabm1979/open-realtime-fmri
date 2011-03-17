@@ -19,3 +19,7 @@ We use the excellent gui_streamer tool from the Donders
 Their source and compiled code is available here
  * http://code.google.com/p/fieldtrip/source/browse/trunk/realtime/acquisition/siemens/
 You need to copy to or share with the scanner the following two files: gui_streamer.exe and pthreadGC2.dll
+
+= Receiving data from the console on the realtime machine =
+The client that receives data from the scanner uses another fieldtrip component, a "buffer"
+ * http://fieldtrip.fcdonders.nl/development/realtime/buffer?s[]=buffer
