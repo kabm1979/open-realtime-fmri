@@ -78,6 +78,7 @@ end;
 %% List of actions to be triggered by the arrival of different kinds of data
 cburt.actions=[];
 action.shortname='localiser';
+action.imgtype='*';
 action=cburealtime_defaults.protocol.localiser;
 action.onstart={};
 action.onreceived={'cburt_convert'};
@@ -86,6 +87,7 @@ action.onend={};
 cburt.actions=[cburt.actions action];
 
 action.shortname='structural';
+action.imgtype='*';
 action=cburealtime_defaults.protocol.anatomical;
 action.onstart={};
 action.onreceived={'cburt_convert_multipledcm_loadheader'};
@@ -94,6 +96,7 @@ action.onend={'cburt_convert_multipledcm_doit','cburt_normalise'};
 cburt.actions=[cburt.actions action];
 
 action.shortname='epinomoco';
+action.imgtype='*';
 action=cburealtime_defaults.protocol.functional;
 action.onstart={};
 action.onreceived={'cburt_convert','cburt_qa_oncepervolume','cburt_diagnostics'};
