@@ -1,16 +1,22 @@
 function [cburt]= cburt_processactions(cburt,seriesnum,eventtype,varargin)
 
-imgtype=cburt.incoming.series(seriesnum).imgtype;
 protocolname=cburt.incoming.series(seriesnum).protocolname;
 
 % Find out if any actions associated with this event
-
-
-findaction=[strcmp({cburt.actions.imgtype},imgtype)];
+if (isfield(cburt.actions,'imgtype'));
+    findaction=[strcmp({cburt.actions.imgtype},cburt.incoming.series(seriesnum).imgtype)] | [strcmp({cburt.actions.imgtype},'*')]
+    if (~any(findaction))
+        fprintf('No action for data with protocol %s and image type %s\n',protocolname,cburt.incoming.series(seriesnum).imgtype);
+    end;
+else
+    findaction=1:length(cburt.actions);
+end;
 
 if (any(findaction))
     action=cburt.actions(findaction);
-    if(~isempty(regexp(protocolname,action.protocolname)))
+    findaction_byprotocol=~[cellfun(@isempty,regexp(protocolname,{action.protocolname}))];
+    if(any(findaction_byprotocol))
+        action=action(findaction_byprotocol);
         cburt.benchmarking.series(seriesnum).(eventtype).start=clock;
         if (isfield(action,eventtype))
             for i=1:length(action.(eventtype))
