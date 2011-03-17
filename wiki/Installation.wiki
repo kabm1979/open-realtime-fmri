@@ -1,8 +1,7 @@
 #summary How to install open realtime
 
 = Requirements =
-A fast PC
-Matlab
+A fast PC with Matlab, preferably r2010b or later.
 
 = Downloading and installing =
  * Make a new directory, perhaps called "realtime", where you will store everything. Below, we'll refer to this as {realtime_dir}
