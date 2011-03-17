@@ -13,7 +13,7 @@ Matlab
  * Download spm8 from http://www.fil.ion.ucl.ac.uk/spm/software/ into {realtime_dir} and unzip
 
 = Low latency export from Siemens Trio =
-_These are a description of what has worked for us. However, please note you follow any advice on this page at your own risk_
+_Disclaimer: This is a description of what has worked for us. However, please note you follow any advice on this page at your own risk._
 
 We use the excellent gui_streamer tool from the Donders
  * http://fieldtrip.fcdonders.nl/development/realtime/fmri?s[]=gui&s[]=streamer
