@@ -1,6 +1,9 @@
-function cburt_benchmark(cburt, seriesnumber)
+function cburt_benchmark2(cburt, seriesnumber)
 
 onr=cburt.benchmarking.series(seriesnumber).onreceived;
 
 global cburealtime_defaults
 actions=[strcmp({cburt.actions.protocolname},cburealtime_defaults.protocol.functional.protocolname)];
+
+
+for actind=1:length(actions)

@@ -7,7 +7,7 @@ end;
 filefilter=sprintf('f*%04d-%05d-%06d-01.nii',seriesnum,imgnum,imgnum);
 fn=dir(fullfile(cburt.incoming.processeddata,filefilter));
 if (length(fn)~=1)
-    fprintf('Confused - not 1 matching nii files for %s\n',filefilter);
+    fprintf('Confused - not 1 matching nii files for %s but %d\n',filefilter,length(fn));
 else
     V=spm_vol(fullfile(cburt.incoming.processeddata,fn(1).name));
     Y=spm_read_vols(V);

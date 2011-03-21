@@ -13,7 +13,7 @@ catch
     cburt.internal.livedata=false;
 end;
 seriesfound=[];
-while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
+while(~strcmp(status,'MEAS_FINISHED'));
     if (readfromfile)
         fid=fopen(incomingmetafn,'r');
         fseek(fid,seekpos,-1); % start where we left off!
@@ -47,7 +47,6 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
                 fprintf('Got command %s\n',cmd);
                 seriesfound=[];
             case {'MEAS_FINISHED'}
-                seriesnum=length(cburt.incoming.series);
                 status=cmd;
                 fprintf('Got command %s\n',cmd);
                 for i=1:length(seriesfound)
@@ -66,16 +65,13 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
                     cburt=cburt_savecburt(cburt,seriesnum);
                     fprintf('all done.\n');
                 catch
-                    fprintf('\nFailed to save cburt structure to %s\nAll done.\n',cburt.incoming.processeddata)
+                    fprintf('\nFailed to save cburt structure to %s.\nAll done.\n',cburt.incoming.processeddata)
                 end;
             case 'LOWLATENCY'
-                dat = ft_read_data(cburt.lowlatency.connstr, 'header', hdr, 'begsample', sample, 'endsample', sample);
-                fprintf('Low latency, sample %d\n',sample);
+                dat = read_data(cburt.lowlatency.connstr, 'header', hdr, 'begsample', sample, 'endsample', sample);
                 if (sample==1)
-                    cburt.incoming.processeddata=fullfile(cburt.directory_conventions.processeddata, hdr.siemensap.tReferenceImage2);
-                    mkdir(cburt.incoming.processeddata);
                     seriesnum=length(cburt.incoming.series)+1;
-                    imgpth=fullfile(cburt.incoming.processeddata,sprintf('fMRI_series_%04d-%05d-%06d-01.nii',seriesnum,sample,sample));
+                    imgpth=fullfile(cburt.incoming.processeddata,sprintf('series_%03d_image_%5d.nii',seriesnum,sample));
                     cburt.benchmarking.series(seriesnum).start=toc(cburt.benchmarking.ticstart);
                     cburt.benchmarking.series(seriesnum).start_time=clock;
                     cburt.incoming.series(seriesnum).imgtype='lowlatency';
@@ -89,24 +85,14 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
                     cburt=cburt_processactions(cburt,seriesnum,'onstart');
                 else
                     seriesnum=length(cburt.incoming.series);
-                    imgpth=fullfile(cburt.incoming.processeddata,sprintf('fMRI_series_%04d-%05d-%06d-01.nii',seriesnum,sample,sample));
                     cburt.incoming.series(seriesnum).receivedvolumes{end+1}=imgpth;
                 end;
                 imgnum=sample;
-
-                % Get data, write the nifti
-                dat = ft_read_data(cburt.lowlatency.connstr, 'header', hdr,'begsample', sample, 'endsample', sample);
-
-                if (length(dat)~= prod(double(hdr.nifti_1.dim)))
-                    fprintf('Serious error - incorrect length %d of incoming data, expected %d\n',length(dat),prod(double(hdr.nifti_1.dim)))
-                end;
-                fprintf('image path is %s\n',imgpth);
-                fid=fopen(imgpth,'wb');
-                fwrite(fid,hdr.orig.nifti_1,'uint8');
-                fwrite(fid,dat,'int16');
-                fclose(fid);
                 
-                % Process associated actions
+                if (mod(imgnum,20)==0)
+                    fprintf('Incoming DICOM type %s series %d volume %d fn %s\n',cburt.incoming.series(seriesnum).imgtype,seriesnum,length(cburt.incoming.series(seriesnum).receivedvolumes),imgfn);
+                end;
+                
                 cburt=cburt_processactions(cburt,seriesnum,'onreceived',imgnum);
                 
                 if (any(imgnum==cburt.model.trigger))
@@ -183,9 +169,7 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
             break;
         end;
     end;
-    if (readfromfile)
+    if (~readfromfile)
         fclose(fid);
-    else
-        break;
     end;
 end;

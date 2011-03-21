@@ -17,20 +17,21 @@ if (any(findaction))
     findaction_byprotocol=~[cellfun(@isempty,regexp(protocolname,{action.protocolname}))];
     if(any(findaction_byprotocol))
         action=action(findaction_byprotocol);
-        cburt.benchmarking.series(seriesnum).(eventtype).start=toc(cburt.benchmarking.ticstart);
+        cburt.benchmarking.series(seriesnum).(eventtype).start=tic;
         if (isfield(action,eventtype))
             for i=1:length(action.(eventtype))
                 if (~strcmp(eventtype,'onreceived') || mod(varargin{1},20)==0)
-                    fprintf('Running action %s for series %d\n',action.(eventtype){i},seriesnum);
+                    fprintf('Running action %s for series %d imgtype %s\n',action.(eventtype){i},seriesnum,imgtype);
                 end;
-                starttime=toc(cburt.benchmarking.ticstart);
+                cburt.benchmarking.format='tictoc';
+                starttime=toc(cburt.benchmarking.start);
                 try
                     cburt.benchmarking.series(seriesnum).(eventtype).(action.(eventtype){i}).start(end+1,:)=starttime;
                 catch
                     cburt.benchmarking.series(seriesnum).(eventtype).(action.(eventtype){i}).start=starttime;
                 end;
                 cburt=feval(action.(eventtype){i},cburt,seriesnum,varargin{:});
-                endtime=toc(cburt.benchmarking.ticstart);
+                endtime=tic(cburt.benchmarking.start);
                 try
                     cburt.benchmarking.series(seriesnum).(eventtype).(action.(eventtype){i}).stop(end+1,:)=endtime;
                 catch
@@ -43,6 +44,6 @@ if (any(findaction))
                 end;
             end;
         end;
-        cburt.benchmarking.series(seriesnum).(eventtype).stop=toc(cburt.benchmarking.ticstart);
+        cburt.benchmarking.series(seriesnum).(eventtype).stop=toc(;
     end;
 end;
