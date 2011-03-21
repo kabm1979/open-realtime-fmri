@@ -1,5 +1,15 @@
-spmpth='/home/stefanh/realtime/spm8';
+% CBU realtime script to set paths
+% You should move this to your /home/[username]/matlab folder, or somewhere
+% else in your matlab path, and then update the paths to match your realtime 
+% installation
+% Rhodri Cusack Mar 2011
+%
 global cburealtime_defaults
+
+% Where is SPM 8?
+spmpth='/home/stefanh/realtime/spm8';
+
+% Where should the processed 
 cburealtime_defaults.path_data='/home/stefanh/realtime/scratch';
 cburealtime_defaults.path_code='/home/stefanh/realtime/svn/trunk/devel';
 cburealtime_defaults.path_sambashare='/local/sambashare';
