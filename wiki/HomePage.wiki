@@ -3,3 +3,8 @@
 = Welcome =
 
 Welcome to the open-realtime-fmri page.
+
+= New =
+21/3/2011 Low latency transfer from Nijmegen
+
+[http://code.google.com/p/open-realtime-fmri/w/images/RT_Siemens.png]
