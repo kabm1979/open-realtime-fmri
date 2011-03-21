@@ -7,4 +7,7 @@ Welcome to the open-realtime-fmri page.
 = New =
 21/3/2011 Low latency transfer from Nijmegen
 
-[http://code.google.com/p/open-realtime-fmri/wiki/images/RT_Siemens.png]
+== Siemens realtime export  ==
+[http://open-realtime-fmri.googlecode.com/svn/wiki/images/RT_Siemens.png]
+== Nijmegen low latency export  ==
+[http://open-realtime-fmri.googlecode.com/svn/wiki/images/RT_Nijmegen.png]
