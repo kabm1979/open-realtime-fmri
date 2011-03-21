@@ -12,7 +12,10 @@ cburealtime_defaults.protocol.anatomical.protocolname='^CBU_MPRAGE.*';
 cburealtime_defaults.protocol.functional.protocolname='.*ep2d.*';
 
 % Set paths
-addpath(fullfile(cburealtime_defaults.path_code,'cburealtime','matlab_src'));
+%  Recursively add subdirectories of cburealtime/matlab_src too
+addpath(genpath(fullfile(cburealtime_defaults.path_code,'cburealtime','matlab_src')));
+
+addpath(genpath(fullfile(cburealtime_defaults.path_code,'external','fieldtrip')))
 addpath(spmpth);
 
 spm('fmri');
