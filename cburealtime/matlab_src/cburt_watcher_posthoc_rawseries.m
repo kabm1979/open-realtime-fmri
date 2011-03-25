@@ -3,12 +3,11 @@
 %  for input data, and stimuli from cburt.model.series(XXX).actualstimuli 
 %  processedpath: full path to processed folder
 %  rawseriespath: full path to raw data
-%  rawseriesnumbers: series numbers of EPIs
+%  rawseriesnumbers: series numbers to reprocess
 
 function [cburt]=cburt_watcher_posthoc_rawseries(processedpath,rawseriespath,rawseriesnumbers)
-
-
-posthocpath='/realtime/scratch/posthoc';
+global cburealtime_defaults
+posthocpath=fullfile(cburealtime_defaults.path_data,'posthoc');
 
 if ~iscell(processedpath)
     processedpath={processedpath};
@@ -53,7 +52,7 @@ for k=1:length(processedpath)
         fclose(fid)
         cburt.directory_conventions.incomingmetapath=posthoc_subj;
     end;
-    cburt=cburt_watcher(cburt,false);
+    cburt=cburt_watcher(cburt,false,false,false);
 end;
 
 end

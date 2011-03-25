@@ -7,14 +7,13 @@ cburealtime_defaults.path_sambashare='/local/sambashare';
 
 % Names of your protocols as seen on the Siemens console. Use regular
 % expressions for wildcards
-cburealtime_defaults.protocol.localiser.protocolname='^CBU_Localiser.*';
-cburealtime_defaults.protocol.anatomical.protocolname='^CBU_MPRAGE.*';
+cburealtime_defaults.protocol.localiser.protocolname='.*localiser.*';
+cburealtime_defaults.protocol.anatomical.protocolname='.*MPRAGE.*';
 cburealtime_defaults.protocol.functional.protocolname='.*ep2d.*';
 
 % Set paths
 %  Recursively add subdirectories of cburealtime/matlab_src too
 addpath(genpath(fullfile(cburealtime_defaults.path_code,'cburealtime','matlab_src')));
-
 addpath(genpath(fullfile(cburealtime_defaults.path_code,'external','fieldtrip')))
 addpath(spmpth);
 
