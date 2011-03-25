@@ -48,62 +48,118 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
                 seriesfound=[];
             case {'MEAS_FINISHED'}
                 seriesnum=length(cburt.incoming.series);
+                if (~readfromfile)
+                    seriesfound=seriesnum;
+                end;
                 status=cmd;
                 fprintf('Got command %s\n',cmd);
                 for i=1:length(seriesfound)
                     cburt=cburt_processactions(cburt,seriesfound(i),'onend');
                 end;
                 
-                if (exist('seriesnum','var'))
+                if (exist('seriesnum','var') && seriesnum>0)
                     cburt.benchmarking.series(seriesnum).stoptime=clock;
                     cburt.benchmarking.series(seriesnum).stop=toc(cburt.benchmarking.ticstart);
+                    try
+                        fprintf('Saving cburt structure...');
+                        cburt=cburt_savecburt(cburt,seriesnum);
+                        fprintf('all done.\n');
+                    catch
+                        fprintf('\nFailed to save cburt structure to %s\nAll done.\n',cburt.incoming.processeddata)
+                    end;
                 end;
                 
                 fprintf('Finished processing series\n');
                 drawnow;
-                try
-                    fprintf('Saving cburt structure...');
-                    cburt=cburt_savecburt(cburt,seriesnum);
-                    fprintf('all done.\n');
-                catch
-                    fprintf('\nFailed to save cburt structure to %s\nAll done.\n',cburt.incoming.processeddata)
-                end;
+                
             case 'LOWLATENCY'
-                dat = ft_read_data(cburt.lowlatency.connstr, 'header', hdr, 'begsample', sample, 'endsample', sample);
-                fprintf('Low latency, sample %d\n',sample);
+                % Wait for 2 seconds max for data to arrive
+                tic
+                success=false;
+                while(toc<5 && ~success)
+                    try
+                        dat = ft_read_data(cburt.lowlatency.connstr, 'header', hdr, 'begsample', sample, 'endsample', sample);
+                        success=true;
+                    catch
+                    end;
+                    % 10 ms delay
+                    pause(0.01)
+                end;
+                
+                if (~success)
+                    fprintf('Failed to load data - serious problem\n');
+                end;
+                
                 if (sample==1)
-                    cburt.incoming.processeddata=fullfile(cburt.directory_conventions.processeddata, hdr.siemensap.tReferenceImage2);
-                    mkdir(cburt.incoming.processeddata);
-                    seriesnum=length(cburt.incoming.series)+1;
-                    imgpth=fullfile(cburt.incoming.processeddata,sprintf('fMRI_series_%04d-%05d-%06d-01.nii',seriesnum,sample,sample));
+                    descrip=strrep(hdr.nifti_1.descrip(:)','\','/');
+                    [pth nme ext]=fileparts(descrip);
+                    cburt.incoming.processeddata=fullfile(cburt.directory_conventions.processeddata,pth);
+                    
+                    % Check tag files in processed data directory to see if
+                    %  series with this nme preexists
+                    seriespreexists=false;
+                    if (exist(cburt.incoming.processeddata,'dir'))
+                        fn=dir(fullfile(cburt.incoming.processeddata,'received_series_*'));
+                        for fnind=1:length(fn)
+                            fnnme=fn(fnind).name(22:end);
+                            if (strcmp(fnnme,nme))
+                                seriesnum=str2num(fn(fnind).name(17:20));
+                                seriespreexists=true;
+                            end;
+                        end;
+                        if (~seriespreexists)
+                            seriesnum=length(fn)+1;
+                        end;
+                    else
+                        mkdir(cburt.incoming.processeddata);
+                        seriesnum=1;
+                    end;
+                    fprintf('New series %d\n',seriesnum);
+                    if (~seriespreexists)
+                        for retry=1:10
+                            try
+                                fid=fopen(fullfile(cburt.incoming.processeddata,sprintf('received_series_%04d_%s',seriesnum,nme)),'w');
+                                if (fid)
+                                    break;
+                                end;
+                            catch
+                                pause(0.025);
+                            end;
+                        end;
+                        fprintf(fid,'%d',datestr(now,30));
+                        fclose(fid);
+                    end;
+                    
+                    cburt.incoming.series(seriesnum).hdr=hdr;
+                    imgpth=fullfile(cburt.incoming.processeddata,sprintf('frawdata_%04d-%05d-%06d-01',seriesnum,sample,sample));
                     cburt.benchmarking.series(seriesnum).start=toc(cburt.benchmarking.ticstart);
                     cburt.benchmarking.series(seriesnum).start_time=clock;
                     cburt.incoming.series(seriesnum).imgtype='lowlatency';
                     cburt.incoming.series(seriesnum).protocolname=strtrim(hdr.siemensap.tProtocolName);
-                    cburt.incoming.series(seriesnum).receivedvolumes={imgpth};
+                    cburt.incoming.series(seriesnum).receivedvolumes={[imgpth '.img']};
                     cburt.incoming.series(seriesnum).timeseries=[];
                     cburt.incoming.series(seriesnum).model=[];
                     cburt.incoming.series(seriesnum).realignmentparms=[];
                     cburt.incoming.series(seriesnum).model=cburt.model;
                     cburt.incoming.series(seriesnum).firstvalidimage=nan;
+                    cburt.incoming.series(seriesnum).receivedvolumesformat='img';
                     cburt=cburt_processactions(cburt,seriesnum,'onstart');
                 else
                     seriesnum=length(cburt.incoming.series);
-                    imgpth=fullfile(cburt.incoming.processeddata,sprintf('fMRI_series_%04d-%05d-%06d-01.nii',seriesnum,sample,sample));
-                    cburt.incoming.series(seriesnum).receivedvolumes{end+1}=imgpth;
+                    imgpth=fullfile(cburt.incoming.processeddata,sprintf('frawdata_%04d-%05d-%06d-01',seriesnum,sample,sample));
+                    cburt.incoming.series(seriesnum).receivedvolumes{end+1}=[imgpth '.img'];
                 end;
                 imgnum=sample;
-
-                % Get data, write the nifti
-                dat = ft_read_data(cburt.lowlatency.connstr, 'header', hdr,'begsample', sample, 'endsample', sample);
-
+                
                 if (length(dat)~= prod(double(hdr.nifti_1.dim)))
                     fprintf('Serious error - incorrect length %d of incoming data, expected %d\n',length(dat),prod(double(hdr.nifti_1.dim)))
                 end;
                 fprintf('image path is %s\n',imgpth);
-                fid=fopen(imgpth,'wb');
-                fwrite(fid,hdr.orig.nifti_1,'uint8');
-                fwrite(fid,dat,'int16');
+                fid=fopen([imgpth '.hdr'],'wb');
+                fwrite(fid,hdr.orig.nifti_1,'uint8');   % Header
+                fclose(fid);
+                fid=fopen([imgpth '.img'],'wb');
+                fwrite(fid,dat,'int16');    % Data
                 fclose(fid);
                 
                 % Process associated actions
@@ -131,7 +187,7 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
                                 break;
                             end;
                             fprintf('Retry %d cannot find dicom file %s\n',i,imgpth);
-                            pause(0.5);
+                            pause(0.1);
                         end;
                         H=spm_dicom_headers(imgpth);
                         
@@ -141,6 +197,9 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
                                 seriesfound=union(seriesfound,seriesnum);
                                 H=spm_dicom_headers(imgpth);
                                 cburt.incoming.processeddata=fullfile(cburt.directory_conventions.processeddata,strtrim(H{1}.PatientsName));
+                                if (~exist(cburt.incoming.processeddata,'dir'))
+                                    mkdir(cburt.incoming.processeddata);
+                                end;
                                 try
                                     for fld=fields(cburt.benchmarking.series(seriesnum))
                                         cburt.benchmarking.series(seriesnum).(fld)=[];
@@ -157,6 +216,7 @@ while(~strcmp(status,'MEAS_FINISHED') || ~readfromfile);
                                 cburt.incoming.series(seriesnum).realignmentparms=[];
                                 cburt.incoming.series(seriesnum).model=cburt.model;
                                 cburt.incoming.series(seriesnum).firstvalidimage=nan;
+                                cburt.incoming.series(seriesnum).receivedvolumesformat='dcm';
                                 cburt=cburt_processactions(cburt,seriesnum,'onstart');
                             else
                                 cburt.incoming.series(seriesnum).receivedvolumes{end+1}=imgpth;

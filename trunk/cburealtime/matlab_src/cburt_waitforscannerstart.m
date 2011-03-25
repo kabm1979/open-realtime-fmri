@@ -3,6 +3,8 @@ try
     close('waitingforkey');
 catch
 end;
+cburt.benchmarking.synchronized=true;
+
 h=waitingforkey;
 while(true)
     mychar=get(h,'currentcharacter');
