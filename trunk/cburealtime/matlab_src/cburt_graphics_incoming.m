@@ -1,4 +1,4 @@
-function [cburt]=cburt_graphics_incoming(cburt,seriesnum)
+function [cburt]=cburt_graphics_incoming(cburt,seriesnum,imgnum)
 
 figure(12); set(gcf,'toolbar','none'); set(gcf,'name','cbuRT:Incoming data'); set(gcf,'menubar','none'); set(gcf,'NumberTitle','off')
 subplot(411);

@@ -1,9 +1,9 @@
-spmpth='/home/stefanh/realtime/spm8';
+spmpth='/open-realtime-fmri/spm8';
 global cburealtime_defaults
 cburealtime_defaults=[];
-cburealtime_defaults.path_data='/home/stefanh/realtime/scratch';
-cburealtime_defaults.path_code='/home/stefanh/realtime/svn/trunk';
-cburealtime_defaults.path_sambashare='/local/sambashare';
+cburealtime_defaults.path_data='/home/rcusack/realtime';
+cburealtime_defaults.path_code='/open-realtime-fmri';
+cburealtime_defaults.path_sambashare=fullfile(cburealtime_defaults.path_data,'rawdata');
 
 % Names of your protocols as seen on the Siemens console. Use regular
 % expressions for wildcards

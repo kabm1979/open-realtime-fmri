@@ -3,8 +3,8 @@ function [cburt]= cburt_processactions(cburt,seriesnum,eventtype,varargin)
 protocolname=cburt.incoming.series(seriesnum).protocolname;
 
 % Find out if any actions associated with this event
-if (isfield(cburt.actions,'imgtype') && ~strcmp(cburt.actions.imgtype,'*'))
-    findaction=[strcmp({cburt.actions.imgtype},cburt.incoming.series(seriesnum).imgtype)] | [strcmp({cburt.actions.imgtype},'*')]
+if (isfield(cburt.actions,'imgtype') )
+    findaction=[strcmp({cburt.actions.imgtype},'*')] | [strcmp({cburt.actions.imgtype},cburt.incoming.series(seriesnum).imgtype)] | [strcmp({cburt.actions.imgtype},'*')];
     if (~any(findaction))
         fprintf('No action for data with protocol %s and image type %s\n',protocolname,cburt.incoming.series(seriesnum).imgtype);
     end;

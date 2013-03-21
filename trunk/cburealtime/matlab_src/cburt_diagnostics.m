@@ -20,23 +20,11 @@ else
         colormap('gray');
         drawnow;
     else
-        figure(20);set(gcf,'Position',[100 300 500 200]);
+        figure(20);%set(gcf,'Position',[100 300 500 200]);
 
         % Plot means
         subplot(1,2,1);
-        gap=0;
-        w=ceil(sqrt(size(Y,3)));
-        xpos=1; ypos=1;
-        img=[];
-        width=size(Y,1); height=size(Y,2);
-        for zpos=1:size(Y,3)
-            img(xpos:(xpos+width-1),ypos:(ypos+height-1))=Y(:,:,zpos);
-            xpos=xpos+width+gap;
-            if (mod(zpos,w)==0)
-                xpos=1;
-                ypos=ypos+height+gap;
-            end;
-        end;
+        img=cburt_get_mosaic(Y);
         imagesc(img',[0 6*mean2(img)]);
         axis off
         axis equal
