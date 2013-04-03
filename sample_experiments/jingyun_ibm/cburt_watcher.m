@@ -113,7 +113,7 @@ action=cburealtime_defaults.protocol.anatomical;
 action.onstart={};
 action.onreceived={'cburt_convert_multipledcm_loadheader'};
 action.ontrigger={};
-action.onend={'cburt_convert_fileperslice','cburt_normalise'};
+action.onend={'cburt_convert_fileperslice','cburt_normalise_adjust'};
 cburt.actions=[cburt.actions action];
 
 action=[];

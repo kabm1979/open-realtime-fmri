@@ -1,5 +1,7 @@
 function [cburt]=cburt_streams_send(cburt,seriesnum,imgnum)
 
+streamspath='/mnt/ibm_data/ActiveRT';
+
 % Now send 
 datatosend=cburt.incoming.series(seriesnum).timeseries.raw(imgnum,:);
 
@@ -12,7 +14,8 @@ if length(datastr)>1
 end;
 
 % Now write out csv
-datafn=fullfile(cburt.incoming.processeddata,sprintf('data_%s_%04d_%04d.csv',nme,seriesnum,imgnum));
+%datafn=fullfile(cburt.incoming.processeddata,sprintf('data_%s_%04d_%04d.csv',nme,seriesnum,imgnum));
+datafn=fullfile(streamspath,sprintf('data_%s_%04d_%04d.csv',nme,seriesnum,imgnum));
 fid=fopen(datafn,'w');
 fprintf(fid,'[%s]',datastr);
 fclose(fid);
